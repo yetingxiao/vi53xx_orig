@@ -1,0 +1,10 @@
+rm -f /opt/etas/lib/libvi53xx.so
+rm -f /opt/etas/modules/vi53xx*
+rm -f /etc/init.d/vi53xx
+rm -f /opt/etas/include/vi53xx_api.h
+
+
+ll /opt/etas/lib/libvi53xx.so
+ll /opt/etas/modules/vi53xx*
+ll /etc/init.d/vi53xx
+ll /opt/etas/include/vi53xx_api.h
