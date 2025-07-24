@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# Start/stop script for vi53xx module
+#
+### BEGIN INIT INFO
+# Provides:             vi53xx
+# Required-Start:       mountall $syslog
+# Required-Stop:        rsyslog  
+# Should-Stop:          simulation
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6       
+# Short-Description: Startup script for loading the ETAS ES53xx driver
+# Description:
+### END INIT INFO
+
+
+# Debugging option for kernel module 
+# Output of proc interface, et. al
+####################################
+STATUS_OUT=/dev/null
+#STATUS_OUT=/dev/stdout
+
+DEVICE_DIR=/dev
+CACHE_DIR=/var/cache/es53xx
+EEPROM_CACHE_DIR=${CACHE_DIR}/eeprom
+PROC_DIR=/proc/es53xx
+PROC_DIR_CACHE=${CACHE_DIR}/proc
+BOARDS_FILE=${PROC_DIR}/boards
+MINOR_0_FILE=${PROC_DIR}/minors/0
+MODULE_NAME=vi53xx
+BOARDS_FOUND=0
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+    log_action_begin_msg "Loading vi53xx module"	  
+    echo "Loading vi53xx module and removing remnant device files..." > $STATUS_OUT
+    MODULE_OPTIONS=
+    if [ -r /etc/labcar.conf ]; then
+	    . /etc/labcar.conf
+	    case "$RTPC_LOG_LEVEL" in
+		    debug|info)
+    			MODULE_OPTIONS="vi53xx_debug=0"
+		    ;;
+	    esac
+    fi
+    insmod /opt/etas/modules/$MODULE_NAME.ko $MODULE_OPTIONS 	
+    log_action_end_msg 0
+    ;;
+  stop)
+    log_action_begin_msg "Removing vi53xx module"
+    rmmod $MODULE_NAME 
+    log_action_end_msg 0
+    ;;
+  status)
+    echo "Checking module\n" > $STATUS_OUT
+    lsmod | grep vi53xx
+    ;;
+  reload)
+    $0 stop && $0 start || exit 1
+    ;;
+  restart)
+    $0 stop && $0 start || exit 1
+    ;;
+    *)
+    echo "Usage: $0 {start|stop|status|restart|reload}"
+    exit 1
+    ;;
+esac
+
+exit 0
+
