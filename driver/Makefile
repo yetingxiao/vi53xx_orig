@@ -38,7 +38,7 @@ install: all
 	$(INSTALL) $(INSTALL_SCRIPT)  $(DESTDIR)/etc/init.d/
 	
 clean:
-	-$(MAKE) -C $(LINUX_DIR) M=$(CURDIR) clean
+	$(MAKE) -C $(LINUX_DIR) M=$(CURDIR) clean
 	rm -f Module.symvers $(obj-tar)
 	
 tar:
